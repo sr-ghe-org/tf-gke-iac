@@ -27,7 +27,7 @@ gke_configs = {
       kubernetes_version         = "1.29.6-gke.1254000"
       release_channel            = "STABLE"
       network_project_id         = "cap-prod-network-3a4b"
-      config_sync_install_repo   = "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/oci/cis-k8s-policy-bundle:1.5.1"
+      config_sync_install_repo   = "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci/cis-k8s-policy-bundle:1.5.1"
       service_account_name       = "sa-gke-iowa"
       create_service_account     = true
       master_authorized_networks = [{ cidr_block = "10.4.4.0/24", display_name = "everything" }]
