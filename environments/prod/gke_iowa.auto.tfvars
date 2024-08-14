@@ -14,7 +14,7 @@ gke_configs = {
   After cluster creation, proceed with provider setup and namespace creation. 
   */
   clusters = {
-    gke_devops_sr = {
+    gke_iowa = {
       project_id                 = "cap-prod-gke-6cc6"
       name                       = "gke-iowa-cluster"
       region                     = "us-central1"

@@ -16,22 +16,22 @@ gke_resources = {
         "ghe_runner_scale_set_controller" = {
           annotations = {}
           labels      = {}
-          name        = "ghe-runner-scale-set-controller-2"
+          name        = "ghe-runner-scale-set-controller"
         },
         "ghe_runner_scale_set" = {
           annotations = {}
           labels      = {}
-          name        = "ghe-runner-scale-set-2"
+          name        = "ghe-runner-scale-set"
         },
         "tfc_operator" = {
           annotations = {}
           labels      = {}
-          name        = "tfc-operator-2"
+          name        = "tfc-operator"
         },
         "tfc_agent_pool" = {
           annotations = {}
           labels      = {}
-          name        = "tfc-agent-pool-2"
+          name        = "tfc-agent-pool"
         }
         */
       }
