@@ -12,6 +12,25 @@ locals {
   gke_iowa_controller_manifests     = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == true }
   gke_iowa_non_controller_manifests = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == false }
 }
+
+resource "google_service_account" "gke_gar_sa" {
+  project    = var.gke_configs.clusters.gke_devops.project_id
+  account_id = "sa-gke-gar"
+}
+
+resource "google_project_iam_member" "gke_gar_sa_role_binding" {
+  project = var.gke_configs.clusters.gke_devops.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${google_service_account.gke_gar_sa.email}"
+}
+/* Bind Workload Identity User to the GAR service account */
+resource "google_service_account_iam_member" "gke_gar_sa_wif_binding" {
+  service_account_id = google_service_account.gke_gar_sa.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.gke_configs.clusters.gke_devops.project_id}.svc.id.goog[config-management-system/root-reconciler]"
+  depends_on         = [module.gke_iowa]
+}
+
 /*
   --- CLUSTER CREATION ---
   Create the GKE cluster "gke_iowa" with specified configurations.
@@ -83,8 +102,9 @@ resource "google_gke_hub_feature_membership" "gke_iowa_hub_feature_membership" {
       content {
         source_format = "unstructured"
         oci {
-          sync_repo   = var.gke_configs.clusters.gke_iowa.config_sync_install_repo
-          secret_type = "gcenode"
+          sync_repo                 = var.gke_configs.clusters.gke_iowa.config_sync_install_repo
+          secret_type               = "gcpserviceaccount"
+          gcp_service_account_email = google_service_account.gke_gar_sa.email
         }
       }
     }
@@ -110,17 +130,10 @@ resource "time_sleep" "gke_iowa_wait_config_sync_install" {
   depends_on      = [google_gke_hub_feature_membership.gke_iowa_hub_feature_membership]
 }
 
-/* Grant necessary permissions for the cluster's service account to access Artifact Registry. */
-resource "google_project_iam_member" "gke_iowa_artifactregistry_reader" {
-  project = var.gke_configs.clusters.gke_iowa.project_id
-  role    = "roles/artifactregistry.reader"
-  member  = "serviceAccount:${module.gke_iowa.service_account}"
-}
-
 /* Bind Workload Identity Federation for specific manifests (RootSync) to enable secure communication. */
 resource "google_service_account_iam_member" "gke_iowa_wif_binding" {
   for_each           = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.manifest.kind == "RootSync" }
-  service_account_id = "projects/${var.gke_configs.clusters.gke_iowa.project_id}/serviceAccounts/${var.gke_configs.clusters.gke_iowa.service_account_name}@${var.gke_configs.clusters.gke_iowa.project_id}.iam.gserviceaccount.com"
+  service_account_id = google_service_account.gke_gar_sa.name
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.gke_configs.clusters.gke_iowa.project_id}.svc.id.goog[${each.value.manifest.metadata.namespace}/root-reconciler-${each.value.manifest.metadata.name}]"
   depends_on         = [module.gke_iowa]
