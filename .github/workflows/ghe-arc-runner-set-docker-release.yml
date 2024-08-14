@@ -1,0 +1,20 @@
+name: Release GHE Runner Scale Set Docker Image
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'docker/images/ghe-arc-runner-set/**'
+  workflow_dispatch:
+
+jobs:
+  ghe-arc-runner-release:
+    uses: ./.github/workflows/docker-pipeline.yml
+    with:
+      SUB_DIR: 'docker/images/ghe-arc-runner-set'
+      IMAGE_REGISTRY_PREFIX: 'us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod'
+      IMAGE_NAME: 'docker/ghe-arc-runner-set'
+      RELEASE_IMAGE: true
+    secrets: inherit
+  

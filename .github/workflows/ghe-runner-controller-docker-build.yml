@@ -1,0 +1,19 @@
+name: Build GHE Runner Controller Docker Image
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'docker/images/ghe-arc-runner-controller/**'
+  workflow_dispatch:
+
+jobs:
+  ghe-arc-runner-build:
+    uses: ./.github/workflows/docker-pipeline.yml
+    with:
+      SUB_DIR: 'docker/images/ghe-arc-runner-controller'
+      IMAGE_REGISTRY_PREFIX: 'us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod'
+      IMAGE_NAME: 'docker/ghe-arc-runner-controller'
+      RELEASE_IMAGE: false
+    secrets: inherit

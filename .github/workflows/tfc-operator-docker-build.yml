@@ -1,0 +1,19 @@
+name: Build Terraform Operator Docker Image
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'docker/images/tfc-operator/**'
+  workflow_dispatch:
+
+jobs:
+  ghe-arc-runner-build:
+    uses: ./.github/workflows/docker-pipeline.yml
+    with:
+      SUB_DIR: 'docker/images/tfc-operator'
+      IMAGE_REGISTRY_PREFIX: 'us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod'
+      IMAGE_NAME: 'docker/tfc-operator'
+      RELEASE_IMAGE: false
+    secrets: inherit

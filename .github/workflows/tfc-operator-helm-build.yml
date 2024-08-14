@@ -1,0 +1,19 @@
+name: Build Terraform Operator Helm Chart
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'charts/tfc-operator/**'
+  workflow_dispatch:
+
+jobs:
+  ghe-arc-runner-helm-chart-release:
+    uses: ./.github/workflows/helm-pipeline.yml
+    with:
+      SUB_DIR: 'charts/'
+      CHART_REGISTRY_PREFIX: 'oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod'
+      CHART_RELATIVE_PATH : 'tfc-operator'
+      RELEASE_CHART: false
+    secrets: inherit

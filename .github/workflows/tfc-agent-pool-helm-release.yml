@@ -1,0 +1,19 @@
+name: Release Terraform Agent Pool Helm Chart
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'charts/tfc-agent-pool/**'
+  workflow_dispatch:
+
+jobs:
+  ghe-arc-runner-helm-chart-release:
+    uses: ./.github/workflows/helm-pipeline.yml
+    with:
+      SUB_DIR: 'charts/'
+      CHART_REGISTRY_PREFIX: 'oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod'
+      CHART_RELATIVE_PATH : 'tfc-agent-pool'
+      RELEASE_CHART: true
+    secrets: inherit
