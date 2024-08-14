@@ -4,5 +4,5 @@ output "gke_iowa" {
 }
 
 output "fleet_gke_iowa" {
-  value = module.fleet_gke_devops
+  value = module.fleet_gke_iowa
 }

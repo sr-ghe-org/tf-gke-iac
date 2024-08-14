@@ -152,70 +152,70 @@ data "google_project" "gke_iowa_project" {
   --- KUBERNETES PROVIDER SETUP ---
   Configure the Kubernetes provider to interact with the GKE cluster.
 */
-provider "kubernetes" {
-  host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
-  token = data.google_client_config.provider.access_token
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "/usr/bin/gke-gcloud-auth-plugin"
-  }
-  alias = "gke_iowa_provider"
-}
+# provider "kubernetes" {
+#   host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
+#   token = data.google_client_config.provider.access_token
+#   exec {
+#     api_version = "client.authentication.k8s.io/v1beta1"
+#     command     = "/usr/bin/gke-gcloud-auth-plugin"
+#   }
+#   alias = "gke_iowa_provider"
+# }
 
 /*
   --- NAMESPACE CREATION ---
   After cluster creation, Create all the required namespaces within the GKE cluster
 */
-resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
-  provider = kubernetes.gke_iowa_provider
-  for_each = var.gke_resources.clusters.gke_iowa.namespaces
-  metadata {
-    annotations = each.value.annotations
-    labels      = each.value.labels
-    name        = each.value.name
-  }
-  depends_on = [module.gke_iowa]
-}
+# resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
+#   provider = kubernetes.gke_iowa_provider
+#   for_each = var.gke_resources.clusters.gke_iowa.namespaces
+#   metadata {
+#     annotations = each.value.annotations
+#     labels      = each.value.labels
+#     name        = each.value.name
+#   }
+#   depends_on = [module.gke_iowa]
+# }
 
 /*
   --- CONTROLLER DEPLOYMENT ---
   Deploy the Kubernetes manifests for the controllers first. Once the controller is deployed - Create the secrets.
 */
-resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
-  provider = kubernetes.gke_iowa_provider
-  for_each = local.gke_iowa_controller_manifests
-  manifest = each.value.manifest
-  depends_on = [kubernetes_namespace.gke_iowa_k8s_namespace,
-    google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
-    google_service_account_iam_member.gke_iowa_wif_binding,
-    time_sleep.gke_iowa_wait_config_sync_install
-  ]
-}
+# resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
+#   provider = kubernetes.gke_iowa_provider
+#   for_each = local.gke_iowa_controller_manifests
+#   manifest = each.value.manifest
+#   depends_on = [kubernetes_namespace.gke_iowa_k8s_namespace,
+#     google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
+#     google_service_account_iam_member.gke_iowa_wif_binding,
+#     time_sleep.gke_iowa_wait_config_sync_install
+#   ]
+# }
 
 /*
   --- PAUSE FOR CONTROLLER INSTALLATION ---
   Wait for 5 minutes (300 seconds) to allow the controllers to fully install and initialize.
 */
-resource "time_sleep" "gke_iowa_wait_controller_install" {
-  count           = length(local.gke_iowa_controller_manifests) > 0 ? 1 : 0
-  create_duration = "300s"
-  depends_on      = [kubernetes_manifest.gke_iowa_k8s_controller_manifests]
-}
+# resource "time_sleep" "gke_iowa_wait_controller_install" {
+#   count           = length(local.gke_iowa_controller_manifests) > 0 ? 1 : 0
+#   create_duration = "300s"
+#   depends_on      = [kubernetes_manifest.gke_iowa_k8s_controller_manifests]
+# }
 
 /*
   --- RESOURCE DEPLOYMENT ---
   After controllers and secrets are ready, deploy the remaining Kubernetes manifests (non-controllers).
 */
-resource "kubernetes_manifest" "gke_iowa_k8s_manifests" {
-  provider = kubernetes.gke_iowa_provider
-  for_each = local.gke_iowa_non_controller_manifests
-  manifest = each.value.manifest
-  depends_on = [
-    kubernetes_namespace.gke_iowa_k8s_namespace,
-    kubernetes_manifest.gke_iowa_k8s_controller_manifests,
-    google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
-    google_service_account_iam_member.gke_iowa_wif_binding,
-    time_sleep.gke_iowa_wait_config_sync_install,
-    time_sleep.gke_iowa_wait_controller_install
-  ]
-}
+# resource "kubernetes_manifest" "gke_iowa_k8s_manifests" {
+#   provider = kubernetes.gke_iowa_provider
+#   for_each = local.gke_iowa_non_controller_manifests
+#   manifest = each.value.manifest
+#   depends_on = [
+#     kubernetes_namespace.gke_iowa_k8s_namespace,
+#     kubernetes_manifest.gke_iowa_k8s_controller_manifests,
+#     google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
+#     google_service_account_iam_member.gke_iowa_wif_binding,
+#     time_sleep.gke_iowa_wait_config_sync_install,
+#     time_sleep.gke_iowa_wait_controller_install
+#   ]
+# }
