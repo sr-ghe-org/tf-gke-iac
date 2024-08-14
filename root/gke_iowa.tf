@@ -14,12 +14,12 @@ locals {
 }
 
 resource "google_service_account" "gke_gar_sa" {
-  project    = var.gke_configs.clusters.gke_devops.project_id
+  project    = var.gke_configs.clusters.gke_iowa.project_id
   account_id = "sa-gke-gar"
 }
 
 resource "google_project_iam_member" "gke_gar_sa_role_binding" {
-  project = var.gke_configs.clusters.gke_devops.project_id
+  project = var.gke_configs.clusters.gke_iowa.project_id
   role    = "roles/artifactregistry.reader"
   member  = "serviceAccount:${google_service_account.gke_gar_sa.email}"
 }
@@ -27,7 +27,7 @@ resource "google_project_iam_member" "gke_gar_sa_role_binding" {
 resource "google_service_account_iam_member" "gke_gar_sa_wif_binding" {
   service_account_id = google_service_account.gke_gar_sa.name
   role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${var.gke_configs.clusters.gke_devops.project_id}.svc.id.goog[config-management-system/root-reconciler]"
+  member             = "serviceAccount:${var.gke_configs.clusters.gke_iowa.project_id}.svc.id.goog[config-management-system/root-reconciler]"
   depends_on         = [module.gke_iowa]
 }
 
