@@ -34,7 +34,7 @@ gke_resources = {
         }
       }
       manifests = {
-        /*
+       /*
         ghe_runner_scale_set_controller = {
           controller = true
           manifest = {
@@ -50,7 +50,7 @@ gke_resources = {
             spec = {
               helm = {
                 auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-devops-ss-1@prj-appcode-gke-prod-da16.iam.gserviceaccount.com"
+                gcpServiceAccountEmail = "sa-gke-iowa@cap-prod-gke-6cc6.iam.gserviceaccount.com"
                 chart                  = "gha-runner-scale-set-controller"
                 includeCRDs            = true
                 namespace              = "ghe-runner-scale-set-controller"
@@ -66,8 +66,6 @@ gke_resources = {
             }
           }
         },
-        */
-        /*
         ghe_runner_scale_set = {
           controller = false
           manifest = {
@@ -83,7 +81,7 @@ gke_resources = {
             spec = {
               helm = {
                 auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-devops-ss-1@prj-appcode-gke-prod-da16.iam.gserviceaccount.com"
+                gcpServiceAccountEmail = "sa-gke-iowa@cap-prod-gke-6cc6.iam.gserviceaccount.com"
                 chart                  = "gha-runner-scale-set"
                 namespace              = "ghe-runner-scale-set"
                 releaseName            = "ghe-runner-scale-set"
@@ -104,8 +102,6 @@ gke_resources = {
             }
           }
         },
-        */
-        /*
         tfc_operator = {
           controller = true
           manifest = {
@@ -121,7 +117,7 @@ gke_resources = {
             spec = {
               helm = {
                 auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-devops-ss-1@prj-appcode-gke-prod-da16.iam.gserviceaccount.com"
+                gcpServiceAccountEmail = "sa-gke-iowa@cap-prod-gke-6cc6.iam.gserviceaccount.com"
                 chart                  = "terraform-cloud-operator"
                 includeCRDs            = true
                 namespace              = "tfc-operator"
@@ -137,8 +133,6 @@ gke_resources = {
             }
           }
         }
-        */
-        /*
         tfc_agent_pool = {
           controller = false
           manifest = {
@@ -154,20 +148,20 @@ gke_resources = {
             spec = {
               helm = {
                 auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-devops-ss-1@prj-appcode-gke-prod-da16.iam.gserviceaccount.com"
+                gcpServiceAccountEmail = "sa-gke-iowa@cap-prod-gke-6cc6.iam.gserviceaccount.com"
                 chart                  = "terraform-agent-pool"
                 namespace              = "tfc-agent-pool"
                 releaseName            = "tfc-agent-pool"
                 repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
                 values = {
                   updateStrategy  = "immediate"
-                  organization    = "sweta-test-env"
+                  organization    = ""
                   tokenSecretName = "tfc-owner"
                   tokenSecretKey  = "token"
-                  agentPoolName   = "tf-agent-pool-2"
+                  agentPoolName   = "tf-agent-pool"
                   agentTokens = [
                     {
-                      name = "tf-agent-pool-2-token"
+                      name = "tf-agent-pool"
                     }
                   ]
                 }
@@ -178,7 +172,7 @@ gke_resources = {
             }
           }
         }
-        */
+       */
       }
     }
   }

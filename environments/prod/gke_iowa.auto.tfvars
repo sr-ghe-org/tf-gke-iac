@@ -23,14 +23,14 @@ gke_configs = {
       subnetwork                 = "subnet-devops-prod-uc1"
       ip_range_pods              = "secrange-devops-prod-pods-uc1"
       ip_range_services          = "secrange-devops-prod-svc-uc1"
-      master_ipv4_cidr_block     = "10.2.2.0/24"
+      master_ipv4_cidr_block     = "10.0.0.0/28"
       kubernetes_version         = "1.29.6-gke.1254000"
       release_channel            = "STABLE"
       network_project_id         = "cap-prod-network-3a4b"
       config_sync_install_repo   = "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci/cis-k8s-policy-bundle:1.5.1"
       service_account_name       = "sa-gke-iowa"
       create_service_account     = true
-      master_authorized_networks = [{ cidr_block = "10.4.4.0/24", display_name = "everything" }]
+      master_authorized_networks = [{ cidr_block = "10.2.2.0/24", display_name = "everything" }]
       node_pools = [
         {
           name                      = "default-node-pool"
