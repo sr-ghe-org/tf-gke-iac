@@ -12,31 +12,6 @@ locals {
   gke_iowa_controller_manifests     = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == true }
   gke_iowa_non_controller_manifests = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == false }
 }
-
-/************************************************************
-  Service Account for GKE (for accessing the GAR)
- ************************************************************/
-
-resource "google_service_account" "gke_gar_sa" {
-  project    = var.gke_configs.clusters.gke_iowa.project_id
-  account_id = "sa-gke-gar"
-}
-
-resource "google_project_iam_member" "gke_gar_sa_role_binding" {
-  project = var.gke_configs.clusters.gke_iowa.project_id
-  role    = "roles/artifactregistry.reader"
-  member  = "serviceAccount:${google_service_account.gke_gar_sa.email}"
-}
-
-/* Bind Workload Identity User to the GAR service account */
-
-resource "google_service_account_iam_member" "gke_gar_sa_wif_binding" {
-  service_account_id = google_service_account.gke_gar_sa.name
-  role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${var.gke_configs.clusters.gke_iowa.project_id}.svc.id.goog[config-management-system/root-reconciler]"
-  depends_on         = [module.gke_iowa]
-}
-
 /*
   --- CLUSTER CREATION ---
   Create the GKE cluster "gke_iowa" with specified configurations.
@@ -78,7 +53,6 @@ module "gke_iowa" {
  --- FLEET REGISTRATION ---
  Register the GKE cluster with Google Cloud Fleet for centralized management.
 */
-
 module "fleet_gke_iowa" {
   source                    = "terraform-google-modules/kubernetes-engine/google//modules/fleet-membership"
   version                   = "30.1.0"
@@ -97,7 +71,7 @@ module "fleet_gke_iowa" {
 resource "google_gke_hub_feature_membership" "gke_iowa_hub_feature_membership" {
   provider   = google-beta
   project    = var.gke_configs.clusters.gke_iowa.project_id
-  depends_on = [google_gke_hub_feature.gke_iowa_fleet_acm, google_service_account_iam_member.gke_gar_sa_wif_binding]
+  depends_on = [google_gke_hub_feature.gke_devops_ss_fleet_acm, google_project_iam_member.gke_iowa_artifactregistry_reader]
   location   = "global"
   feature    = "configmanagement"
   membership = module.fleet_gke_iowa.cluster_membership_id
@@ -109,9 +83,8 @@ resource "google_gke_hub_feature_membership" "gke_iowa_hub_feature_membership" {
       content {
         source_format = "unstructured"
         oci {
-          sync_repo                 = var.gke_configs.clusters.gke_iowa.config_sync_install_repo
-          secret_type               = "gcpserviceaccount"
-          gcp_service_account_email = google_service_account.gke_gar_sa.email
+          sync_repo   = var.gke_configs.clusters.gke_iowa.config_sync_install_repo
+          secret_type = "gcenode"
         }
       }
     }
@@ -137,11 +110,17 @@ resource "time_sleep" "gke_iowa_wait_config_sync_install" {
   depends_on      = [google_gke_hub_feature_membership.gke_iowa_hub_feature_membership]
 }
 
-/* Bind Workload Identity Federation for specific manifests (RootSync) to enable secure communication. */
+/* Grant necessary permissions for the cluster's service account to access Artifact Registry. */
+resource "google_project_iam_member" "gke_iowa_artifactregistry_reader" {
+  project = var.gke_configs.clusters.gke_iowa.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${module.gke_iowa.service_account}"
+}
 
+/* Bind Workload Identity Federation for specific manifests (RootSync) to enable secure communication. */
 resource "google_service_account_iam_member" "gke_iowa_wif_binding" {
   for_each           = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.manifest.kind == "RootSync" }
-  service_account_id = "projects/${var.gke_configs.clusters.gke_iowa.project_id}/serviceAccounts/${google_service_account.gke_gar_sa.account_id}@${var.gke_configs.clusters.gke_iowa.project_id}.iam.gserviceaccount.com"
+  service_account_id = "projects/${var.gke_configs.clusters.gke_iowa.project_id}/serviceAccounts/${var.gke_configs.clusters.gke_iowa.service_account_name}@${var.gke_configs.clusters.gke_iowa.project_id}.iam.gserviceaccount.com"
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.gke_configs.clusters.gke_iowa.project_id}.svc.id.goog[${each.value.manifest.metadata.namespace}/root-reconciler-${each.value.manifest.metadata.name}]"
   depends_on         = [module.gke_iowa]
@@ -199,6 +178,7 @@ resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
   --- PAUSE FOR CONTROLLER INSTALLATION ---
   Wait for 5 minutes (300 seconds) to allow the controllers to fully install and initialize.
 */
+
 # resource "time_sleep" "gke_iowa_wait_controller_install" {
 #   count           = length(local.gke_iowa_controller_manifests) > 0 ? 1 : 0
 #   create_duration = "300s"
