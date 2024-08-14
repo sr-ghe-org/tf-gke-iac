@@ -64,7 +64,7 @@ gke_configs = {
       enable_policy_controller  = true
       enable_fleet_feature      = true
       enable_config_sync        = true
-      fleet_membership_name     = "gke-devops-sr-cluster"
+      fleet_membership_name     = "gke-iowa-cluster"
     }
   }
 }
