@@ -155,30 +155,30 @@ data "google_project" "gke_iowa_project" {
   --- KUBERNETES PROVIDER SETUP ---
   Configure the Kubernetes provider to interact with the GKE cluster.
 */
-# provider "kubernetes" {
-#   host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
-#   token = data.google_client_config.provider.access_token
-#   exec {
-#     api_version = "client.authentication.k8s.io/v1beta1"
-#     command     = "/usr/bin/gke-gcloud-auth-plugin"
-#   }
-#   alias = "gke_iowa_provider"
-# }
+provider "kubernetes" {
+  host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
+  token = data.google_client_config.provider.access_token
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "/usr/bin/gke-gcloud-auth-plugin"
+  }
+  alias = "gke_iowa_provider"
+}
 
 /*
   --- NAMESPACE CREATION ---
   After cluster creation, Create all the required namespaces within the GKE cluster
 */
-# resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
-#   provider = kubernetes.gke_iowa_provider
-#   for_each = var.gke_resources.clusters.gke_iowa.namespaces
-#   metadata {
-#     annotations = each.value.annotations
-#     labels      = each.value.labels
-#     name        = each.value.name
-#   }
-#   depends_on = [module.gke_iowa]
-# }
+resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
+  provider = kubernetes.gke_iowa_provider
+  for_each = var.gke_resources.clusters.gke_iowa.namespaces
+  metadata {
+    annotations = each.value.annotations
+    labels      = each.value.labels
+    name        = each.value.name
+  }
+  depends_on = [module.gke_iowa]
+}
 
 /*
   --- CONTROLLER DEPLOYMENT ---
