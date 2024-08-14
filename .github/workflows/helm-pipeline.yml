@@ -1,0 +1,76 @@
+name: Publish and Deploy Helm Chart
+
+on:
+  workflow_call:
+    inputs:
+      SUB_DIR:
+        description: 'Path to Helm chart directory'
+        required: true
+        type: string
+      CHART_RELATIVE_PATH:
+        description: 'Relative path of the helm chart repository'
+        required: true
+        type: string
+      CHART_PREFIX:
+        description: 'Prefix for the chart name'
+        required: false
+        type: string
+      CHART_REGISTRY_PREFIX:
+        description: 'Chart registry name'
+        required: true
+        type: string
+      RELEASE_CHART:
+        description: 'Whether to push the chart to the repository'
+        required: true
+        type: boolean
+      VERSION:
+        description: 'Version of the helm chart'
+        required: false
+        type: string
+     
+run-name: HELM-PIPELINE
+
+jobs : 
+  helm-build: 
+    runs-on: ghe-runner-scale-set-bootstrap
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - name: 'Git repo checkout'
+        uses: actions/checkout@v3 
+        with:
+          fetch-depth: 0
+
+      - id: 'auth'
+        if: ${{ inputs.RELEASE_CHART }}
+        uses: 'google-github-actions/auth@v1'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: 'projects/362698614209/locations/global/workloadIdentityPools/org-wif-prod-ghe/providers/gh-provider'
+          service_account: 'cap-wf-prod-prod-sa-gke@cap-prod-gke-6cc6.iam.gserviceaccount.com'
+
+      - name: Authenticate to Artifact Registry
+        if: ${{ inputs.RELEASE_CHART }}
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+          gcloud auth print-access-token | helm registry login -u oauth2accesstoken --password-stdin https://us-central1-docker.pkg.dev
+      
+      - name: 'Helm package'
+        id : package
+        run: |
+          cd ${{ inputs.SUB_DIR }}
+          PACKAGE_NAME=$(helm package ${{ inputs.CHART_RELATIVE_PATH }} | awk '/Successfully packaged chart and saved it to:/ {print $NF}')
+          PACKAGE_NAME=${PACKAGE_NAME##*/}
+          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> "$GITHUB_OUTPUT"
+          echo "The packaged chart is ${PACKAGE_NAME##*/}"
+
+      - name: 'Run helm push'
+        if: ${{ inputs.RELEASE_CHART }}  
+        run: |
+          cd ${{ inputs.SUB_DIR }}
+          helm push ${{ steps.package.outputs.PACKAGE_NAME }} ${{ inputs.CHART_REGISTRY_PREFIX }} --debug
+          echo "Chart pushed successfully to ${{ inputs.CHART_REGISTRY_PREFIX }}"      
+        
+      
