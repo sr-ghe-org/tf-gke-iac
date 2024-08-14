@@ -34,37 +34,37 @@ gke_resources = {
         }
       }
       manifests = {
-        ghe_runner_scale_set_controller = {
-          controller = true
-          manifest = {
-            apiVersion = "configsync.gke.io/v1beta1"
-            kind       = "RootSync"
-            metadata = {
-              annotations = {
-                "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-              }
-              name      = "ghe-runner-scale-set-controller"
-              namespace = "config-management-system"
-            }
-            spec = {
-              helm = {
-                auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-                chart                  = "gha-runner-scale-set-controller"
-                includeCRDs            = true
-                namespace              = "ghe-runner-scale-set-controller"
-                releaseName            = "ghe-runner-scale-set-controller"
-                repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-                values = {
-                  updateStrategy = "immediate"
-                }
-                version = "0.9.0"
-              }
-              sourceFormat = "unstructured"
-              sourceType   = "helm"
-            }
-          }
-        },
+        # ghe_runner_scale_set_controller = {
+        #   controller = true
+        #   manifest = {
+        #     apiVersion = "configsync.gke.io/v1beta1"
+        #     kind       = "RootSync"
+        #     metadata = {
+        #       annotations = {
+        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
+        #       }
+        #       name      = "ghe-runner-scale-set-controller"
+        #       namespace = "config-management-system"
+        #     }
+        #     spec = {
+        #       helm = {
+        #         auth                   = "gcpserviceaccount"
+        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
+        #         chart                  = "gha-runner-scale-set-controller"
+        #         includeCRDs            = true
+        #         namespace              = "ghe-runner-scale-set-controller"
+        #         releaseName            = "ghe-runner-scale-set-controller"
+        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
+        #         values = {
+        #           updateStrategy = "immediate"
+        #         }
+        #         version = "0.9.0"
+        #       }
+        #       sourceFormat = "unstructured"
+        #       sourceType   = "helm"
+        #     }
+        #   }
+        # },
         ghe_runner_scale_set = {
           controller = false
           manifest = {
@@ -101,37 +101,37 @@ gke_resources = {
             }
           }
         },
-        tfc_operator = {
-          controller = true
-          manifest = {
-            apiVersion = "configsync.gke.io/v1beta1"
-            kind       = "RootSync"
-            metadata = {
-              annotations = {
-                "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-              }
-              name      = "tfc-operator"
-              namespace = "config-management-system"
-            }
-            spec = {
-              helm = {
-                auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-                chart                  = "terraform-cloud-operator"
-                includeCRDs            = true
-                namespace              = "tfc-operator"
-                releaseName            = "tfc-operator"
-                repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-                values = {
-                  updateStrategy = "immediate"
-                }
-                version = "2.4.0"
-              }
-              sourceFormat = "unstructured"
-              sourceType   = "helm"
-            }
-          }
-        }
+        # tfc_operator = {
+        #   controller = true
+        #   manifest = {
+        #     apiVersion = "configsync.gke.io/v1beta1"
+        #     kind       = "RootSync"
+        #     metadata = {
+        #       annotations = {
+        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
+        #       }
+        #       name      = "tfc-operator"
+        #       namespace = "config-management-system"
+        #     }
+        #     spec = {
+        #       helm = {
+        #         auth                   = "gcpserviceaccount"
+        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
+        #         chart                  = "terraform-cloud-operator"
+        #         includeCRDs            = true
+        #         namespace              = "tfc-operator"
+        #         releaseName            = "tfc-operator"
+        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
+        #         values = {
+        #           updateStrategy = "immediate"
+        #         }
+        #         version = "2.4.0"
+        #       }
+        #       sourceFormat = "unstructured"
+        #       sourceType   = "helm"
+        #     }
+        #   }
+        # }
         tfc_agent_pool = {
           controller = false
           manifest = {
