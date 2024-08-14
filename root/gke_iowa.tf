@@ -90,7 +90,7 @@ module "fleet_gke_iowa" {
 resource "google_gke_hub_feature_membership" "gke_iowa_hub_feature_membership" {
   provider   = google-beta
   project    = var.gke_configs.clusters.gke_iowa.project_id
-  depends_on = [google_gke_hub_feature.gke_iowa_fleet_acm, google_project_iam_member.gke_iowa_artifactregistry_reader]
+  depends_on = [google_gke_hub_feature.gke_iowa_fleet_acm, google_project_iam_member.gke_gar_sa_wif_binding]
   location   = "global"
   feature    = "configmanagement"
   membership = module.fleet_gke_iowa.cluster_membership_id
