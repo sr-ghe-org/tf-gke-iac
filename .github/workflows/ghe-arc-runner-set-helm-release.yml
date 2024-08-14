@@ -1,0 +1,19 @@
+name: Release GHE Runner Scale Set Helm Chart
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'charts/ghe-runner-scale-set/**'
+  workflow_dispatch:
+
+jobs:
+  ghe-arc-runner-helm-chart-release:
+    uses: ./.github/workflows/helm-pipeline.yml
+    with:
+      SUB_DIR: 'charts/'
+      CHART_REGISTRY_PREFIX: 'oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod'
+      CHART_RELATIVE_PATH : 'ghe-runner-scale-set'
+      RELEASE_CHART: true
+    secrets: inherit

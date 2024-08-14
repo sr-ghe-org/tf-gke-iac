@@ -1,0 +1,67 @@
+name: oci-image-pipeline
+
+on:
+  workflow_call:
+    inputs:
+      SUB_DIR:
+        description: 'path to yaml artifacts'
+        required: true
+        type: string
+      IMAGE_REGISTRY_PREFIX:
+        description: 'image registry name'
+        required: true
+        type: string
+      IMAGE_NAME:
+        description: 'image name'
+        required: true
+        type: string
+      RELEASE_IMAGE:
+        description: 'release image'
+        required: true
+        type: boolean
+
+run-name: OCI-IMAGE-PIPELINE
+
+jobs:
+  oci-build:
+    runs-on: ghe-runner-scale-set-bootstrap
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: 'Git repo checkout'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 'Extract version'
+        id: version
+        run: |
+              cd ${{ inputs.SUB_DIR }}
+              VERSION=$(cat VERSION)
+              echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      
+      - name: 'Run tar artifacts'
+        run: |
+              cd ${{ inputs.SUB_DIR }}
+              mv VERSION /tmp/
+              tar -czvf /tmp/${{ inputs.IMAGE_NAME }}-${{ steps.version.outputs.version }}.tar.gz .
+              mv /tmp/VERSION .
+        
+      - id: 'auth'
+        if: ${{ inputs.RELEASE_IMAGE }}
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          token_format: 'access_token'
+          workload_identity_provider: 'projects/362698614209/locations/global/workloadIdentityPools/org-wif-prod-ghe/providers/gh-provider'
+          service_account: 'cap-wf-prod-prod-sa-gke@cap-prod-gke-6cc6.iam.gserviceaccount.com'
+          
+      - name: 'Configure login for GAR, GCR'
+        if: ${{ inputs.RELEASE_IMAGE }}
+        run: gcloud auth configure-docker gcr.io,us-central1-docker.pkg.dev
+
+      - name: 'Run oras push'
+        if: ${{ inputs.RELEASE_IMAGE }}
+        run: oras push --disable-path-validation ${{ inputs.IMAGE_REGISTRY_PREFIX }}/${{ inputs.IMAGE_NAME }}:${{ steps.version.outputs.version }} /tmp/${{ inputs.IMAGE_NAME }}-${{ steps.version.outputs.version }}.tar.gz

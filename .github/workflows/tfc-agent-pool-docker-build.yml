@@ -1,0 +1,19 @@
+name: Build Terraform Agent Pool Docker Image
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'docker/images/tfc-agent-pool/**'
+  workflow_dispatch:
+
+jobs:
+  ghe-arc-runner-build:
+    uses: ./.github/workflows/docker-pipeline.yml
+    with:
+      SUB_DIR: 'docker/images/tfc-agent-pool'
+      IMAGE_REGISTRY_PREFIX: 'us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod'
+      IMAGE_NAME: 'docker/tfc-agent-pool'
+      RELEASE_IMAGE: false
+    secrets: inherit

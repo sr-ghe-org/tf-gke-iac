@@ -1,0 +1,63 @@
+name: docker-pipeline
+
+on:
+  workflow_call:
+    inputs:
+      SUB_DIR:
+        description: 'path to Dockerfile'
+        required: true
+        type: string
+      IMAGE_REGISTRY_PREFIX:
+        description: 'image registry name'
+        required: true
+        type: string
+      IMAGE_NAME:
+        description: 'image name'
+        required: true
+        type: string
+      RELEASE_IMAGE:
+        description: 'release image'
+        required: true
+        type: boolean
+
+run-name: DOCKER-PIPELINE
+
+jobs:
+  docker-build:
+    runs-on: ghe-runner-scale-set-bootstrap
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: 'Git repo checkout'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: 'Extract version'
+        id: version
+        run: |
+              cd ${{ inputs.SUB_DIR }}
+              VERSION=$(cat VERSION)
+              echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      
+      - name: 'Run docker build'
+        run: cd ${{ inputs.SUB_DIR }} && docker build -t ${{ inputs.IMAGE_REGISTRY_PREFIX }}/${{ inputs.IMAGE_NAME }}:${{ steps.version.outputs.version }} .
+        
+      - id: 'auth'
+        if: ${{ inputs.RELEASE_IMAGE }}
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: true
+          token_format: 'access_token'
+          workload_identity_provider: 'projects/362698614209/locations/global/workloadIdentityPools/org-wif-prod-ghe/providers/gh-provider'
+          service_account: 'cap-wf-prod-prod-sa-gke@cap-prod-gke-6cc6.iam.gserviceaccount.com'
+          
+      - name: 'Configure docker login for GAR, GCR'
+        if: ${{ inputs.RELEASE_IMAGE }}
+        run: gcloud auth configure-docker gcr.io,us-central1-docker.pkg.dev
+
+      - name: 'Run docker push'
+        if: ${{ inputs.RELEASE_IMAGE }}
+        run: docker push ${{ inputs.IMAGE_REGISTRY_PREFIX }}/${{ inputs.IMAGE_NAME }}:${{ steps.version.outputs.version }}

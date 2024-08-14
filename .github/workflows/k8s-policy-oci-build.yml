@@ -1,0 +1,19 @@
+name: Build k8s policy oci image
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'oci/cis-k8s-bundle/**'
+  workflow_dispatch:
+
+jobs:
+  config-sync-init-build:
+    uses: ./.github/workflows/oci-image-pipeline.yml
+    with:
+      SUB_DIR: 'oci/cis-k8s-bundle'
+      IMAGE_REGISTRY_PREFIX: 'us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci'
+      IMAGE_NAME: 'cis-k8s-policy-bundle'
+      RELEASE_IMAGE: false
+    secrets: inherit

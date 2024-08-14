@@ -1,0 +1,19 @@
+name: Release config-sync-init oci image
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'oci/config-sync-init/**'
+  workflow_dispatch:
+
+jobs:
+  config-sync-init-release:
+    uses: ./.github/workflows/oci-image-pipeline.yml
+    with:
+      SUB_DIR: 'oci/config-sync-init'
+      IMAGE_REGISTRY_PREFIX: 'us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci'
+      IMAGE_NAME: 'config-sync-init'
+      RELEASE_IMAGE: true
+    secrets: inherit
