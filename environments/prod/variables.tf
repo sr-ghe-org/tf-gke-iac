@@ -86,17 +86,5 @@ variable "gke_configs" {
 
 variable "gke_resources" {
   description = "GKE resources"
-  # type = object({
-  #   clusters = map(object({
-  #     namespaces = map(object({
-  #       annotations = optional(map(string), {})
-  #       labels      = optional(map(string), {})
-  #       name        = string
-  #     }))
-  #     manifests = map(object({
-  #       manifest = map(any)
-  #     }))
-  #   }))
-  # })
 }
 

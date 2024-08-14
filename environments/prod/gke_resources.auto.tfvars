@@ -34,7 +34,6 @@ gke_resources = {
         }
       }
       manifests = {
-       /*
         ghe_runner_scale_set_controller = {
           controller = true
           manifest = {
@@ -172,7 +171,6 @@ gke_resources = {
             }
           }
         }
-       */
       }
     }
   }
