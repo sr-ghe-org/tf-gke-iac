@@ -163,6 +163,7 @@ resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
   --- CONTROLLER DEPLOYMENT ---
   Deploy the Kubernetes manifests for the controllers first. Once the controller is deployed - Create the secrets.
 */
+/*
 resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
   provider = kubernetes.gke_iowa_provider
   for_each = local.gke_iowa_controller_manifests
@@ -173,7 +174,7 @@ resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
     time_sleep.gke_iowa_wait_config_sync_install
   ]
 }
-
+*/
 /*
   --- PAUSE FOR CONTROLLER INSTALLATION ---
   Wait for 5 minutes (300 seconds) to allow the controllers to fully install and initialize.
