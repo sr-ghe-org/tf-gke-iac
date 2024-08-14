@@ -34,5 +34,5 @@ agentDeployment:
   spec:
     containers:
     - name: tfc-agent
-      image: "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/docker/tfc-agent-pool:1.15.2"
+      image: "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/docker/tfc-agent-pool:1.15"
       
