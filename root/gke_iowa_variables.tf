@@ -1,28 +1,3 @@
-variable "artifact_registry_configs" {
-  type = object({
-    repositories = map(object({
-      repository_id = string
-      labels        = map(string)
-      mode          = string
-      project_id    = string
-      format        = string
-      location      = string
-      description   = optional(string, "")
-    }))
-  })
-}
-
-variable "iam_configs" {
-  description = "IAM Configurations"
-  type = object({
-    iam_role_bindings = map(object({
-      project_id            = string
-      service_account_email = string
-      roles                 = list(string)
-    }))
-  })
-}
-
 variable "gke_configs" {
   type = object({
     clusters = map(object({
@@ -49,7 +24,7 @@ variable "gke_configs" {
       enable_policy_controller   = optional(bool, false)
       enable_fleet_feature       = optional(bool, false)
       enable_config_sync         = optional(bool, false)
-      config_sync_install_repo   = optional(string, "us-central1-docker.pkg.dev/prj-appcode-gke-prod-da16/artifreg-devops-prod/oci/config-sync-init:0.1")
+      config_sync_install_repo   = optional(string, "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci/config-sync-init:0.1")
       service_account_name       = optional(string)
       create_service_account     = optional(bool, true)
       config_mgmt_version        = optional(string, "1.18.0")
@@ -84,6 +59,7 @@ variable "gke_configs" {
   })
 }
 
+
 variable "gke_resources" {
   description = "GKE resources"
   # type = object({
@@ -99,4 +75,3 @@ variable "gke_resources" {
   #   }))
   # })
 }
-
