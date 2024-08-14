@@ -29,13 +29,13 @@ resource "google_project_iam_member" "gke_gar_sa_role_binding" {
 }
 
 /* Bind Workload Identity User to the GAR service account */
-/*
+
 resource "google_service_account_iam_member" "gke_gar_sa_wif_binding" {
   service_account_id = google_service_account.gke_gar_sa.name
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.gke_configs.clusters.gke_iowa.project_id}.svc.id.goog[config-management-system/root-reconciler]"
+  depends_on         = [module.gke_iowa]
 }
-*/
 
 /*
   --- CLUSTER CREATION ---
@@ -138,7 +138,7 @@ resource "time_sleep" "gke_iowa_wait_config_sync_install" {
 }
 
 /* Bind Workload Identity Federation for specific manifests (RootSync) to enable secure communication. */
-/*
+
 resource "google_service_account_iam_member" "gke_iowa_wif_binding" {
   for_each           = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.manifest.kind == "RootSync" }
   service_account_id = "projects/${var.gke_configs.clusters.gke_iowa.project_id}/serviceAccounts/${google_service_account.gke_gar_sa.account_id}@${var.gke_configs.clusters.gke_iowa.project_id}.iam.gserviceaccount.com"
@@ -146,8 +146,6 @@ resource "google_service_account_iam_member" "gke_iowa_wif_binding" {
   member             = "serviceAccount:${var.gke_configs.clusters.gke_iowa.project_id}.svc.id.goog[${each.value.manifest.metadata.namespace}/root-reconciler-${each.value.manifest.metadata.name}]"
   depends_on         = [module.gke_iowa]
 }
-*/
-
 
 data "google_project" "gke_iowa_project" {
   project_id = var.gke_configs.clusters.gke_iowa.project_id
