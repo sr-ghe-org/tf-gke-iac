@@ -184,16 +184,16 @@ resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
   --- CONTROLLER DEPLOYMENT ---
   Deploy the Kubernetes manifests for the controllers first. Once the controller is deployed - Create the secrets.
 */
-# resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
-#   provider = kubernetes.gke_iowa_provider
-#   for_each = local.gke_iowa_controller_manifests
-#   manifest = each.value.manifest
-#   depends_on = [kubernetes_namespace.gke_iowa_k8s_namespace,
-#     google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
-#     google_service_account_iam_member.gke_iowa_wif_binding,
-#     time_sleep.gke_iowa_wait_config_sync_install
-#   ]
-# }
+resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
+  provider = kubernetes.gke_iowa_provider
+  for_each = local.gke_iowa_controller_manifests
+  manifest = each.value.manifest
+  depends_on = [kubernetes_namespace.gke_iowa_k8s_namespace,
+    google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
+    google_service_account_iam_member.gke_iowa_wif_binding,
+    time_sleep.gke_iowa_wait_config_sync_install
+  ]
+}
 
 /*
   --- PAUSE FOR CONTROLLER INSTALLATION ---
