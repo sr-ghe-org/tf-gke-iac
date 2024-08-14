@@ -1,7 +1,4 @@
-/*
-# Example
-
-output "my_prod_resource_id" {
-    value = module.my_prod_resource.id
+output "main" {
+  value     = module.main
+  sensitive = true
 }
-*/
