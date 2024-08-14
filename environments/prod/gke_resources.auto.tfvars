@@ -90,8 +90,8 @@ gke_resources = {
                   githubConfigUrl    = "https://github.com/cgsyam-ghe-org"
                   githubConfigSecret = "pre-defined-secret"
                   controllerServiceAccount = {
-                    namespace = ""
-                    name      = ""
+                    namespace = "ghe-runner-scale-set-controller"
+                    name      = "ghe-runner-scale-set-controller-gha-rs-controller"
                   }
                 }
                 version = "0.9.0"
@@ -154,7 +154,7 @@ gke_resources = {
                 repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
                 values = {
                   updateStrategy  = "immediate"
-                  organization    = ""
+                  organization    = "tfc-test-pool"
                   tokenSecretName = "tfc-owner"
                   tokenSecretKey  = "token"
                   agentPoolName   = "tf-agent-pool"
