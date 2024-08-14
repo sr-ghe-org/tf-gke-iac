@@ -1,0 +1,1 @@
+FROM hashicorp/terraform-cloud-operator:2.4.0

@@ -1,0 +1,26 @@
+apiVersion: app.terraform.io/v1alpha2
+kind: AgentPool
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  organization: {{ .Values.organization }}
+  token:
+    secretKeyRef:
+      name: {{ .Values.tokenSecretName }}
+      key: {{ .Values.tokenSecretKey }}
+  name: {{ .Values.agentPoolName }}
+  agentTokens: {{ toYaml .Values.agentTokens | nindent 4 }}
+  agentDeployment:
+    replicas: {{ .Values.agentDeployment.replicas }}
+    spec:
+      containers: {{ toYaml .Values.agentDeployment.spec.containers | nindent 8 }}
+
+
+{{- if .Values.autoscaling }}
+  autoscaling:
+    minReplicas: {{ .Values.autoscaling.minReplicas }}
+    maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+    cooldownPeriodSeconds: {{ .Values.autoscaling.cooldownPeriodSeconds }}
+    targetWorkspaces: {{ toYaml .Values.autoscaling.targetWorkspaces | nindent 6 }}
+{{- end }}

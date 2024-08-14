@@ -1,0 +1,38 @@
+# Your Terraform Cloud organization name (required)
+# Example: "tfc-test-env" 
+organization: ""
+
+# The name of the Kubernetes Secret storing your Terraform Cloud API token (organization token) (required)
+# kubectl create namespace <NAMESPACE>
+# kubectl command to create token : kubectl create secret generic tfc-owner --from-literal=token='<TFC_ORG_TOKEN>' --namespace=$NAMESPACE
+# Example: "tfc-owner"
+tokenSecretName: ""
+
+# The key within the Secret where the token is stored (usually "token")
+tokenSecretKey: "token"
+
+# --- Agent Pool Configuration ---
+
+# The name you want to give to your Agent Pool (required)
+# Example: "my-awesome-agent-pool"
+agentPoolName: ""
+
+# List of agent tokens to associate with this Agent Pool 
+# Each token entry should have a 'name'
+# Example:
+# - name: "agent-token-1"
+agentTokens:
+  - name: ""
+
+# --- Agent Deployment Settings ---
+
+agentDeployment:
+  # Number of agent replicas to run (adjust based on your needs)
+  replicas: 1
+
+  # Specification for the agent container(s)
+  spec:
+    containers:
+    - name: tfc-agent
+      image: "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/docker/tfc-agent-pool:1.15.2"
+      
