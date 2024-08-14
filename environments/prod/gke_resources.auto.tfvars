@@ -58,7 +58,7 @@ gke_resources = {
                 values = {
                   updateStrategy = "immediate"
                 }
-                version = "0.8.3"
+                version = "0.9.0"
               }
               sourceFormat = "unstructured"
               sourceType   = "helm"
@@ -94,7 +94,7 @@ gke_resources = {
                     name      = ""
                   }
                 }
-                version = "0.8.3"
+                version = "0.9.0"
               }
               sourceFormat = "unstructured"
               sourceType   = "helm"
@@ -125,7 +125,7 @@ gke_resources = {
                 values = {
                   updateStrategy = "immediate"
                 }
-                version = "2.1.0"
+                version = "2.4.0"
               }
               sourceFormat = "unstructured"
               sourceType   = "helm"
@@ -164,7 +164,7 @@ gke_resources = {
                     }
                   ]
                 }
-                version = "0.1.0"
+                version = "0.1.2"
               }
               sourceFormat = "unstructured"
               sourceType   = "helm"
