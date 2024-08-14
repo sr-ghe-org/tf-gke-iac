@@ -130,6 +130,13 @@ resource "time_sleep" "gke_iowa_wait_config_sync_install" {
   depends_on      = [google_gke_hub_feature_membership.gke_iowa_hub_feature_membership]
 }
 
+/* GAR Reader for GKE Node SA. */
+resource "google_project_iam_member" "gke_iowa_artifactregistry_reader" {
+  project = var.gke_configs.clusters.gke_iowa.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${module.gke_iowa.service_account}"
+}
+
 /* Bind Workload Identity Federation for specific manifests (RootSync) to enable secure communication. */
 resource "google_service_account_iam_member" "gke_iowa_wif_binding" {
   for_each           = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.manifest.kind == "RootSync" }
@@ -184,7 +191,8 @@ resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
   depends_on = [kubernetes_namespace.gke_iowa_k8s_namespace,
     google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
     google_service_account_iam_member.gke_iowa_wif_binding,
-    time_sleep.gke_iowa_wait_config_sync_install
+    time_sleep.gke_iowa_wait_config_sync_install,
+    google_project_iam_member.gke_iowa_artifactregistry_reader
   ]
 }
 
@@ -213,6 +221,7 @@ resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
 #     google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
 #     google_service_account_iam_member.gke_iowa_wif_binding,
 #     time_sleep.gke_iowa_wait_config_sync_install,
-#     time_sleep.gke_iowa_wait_controller_install
+#     time_sleep.gke_iowa_wait_controller_install,
+#     google_project_iam_member.gke_iowa_artifactregistry_reader
 #   ]
 # }
