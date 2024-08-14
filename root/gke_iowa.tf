@@ -211,17 +211,17 @@ resource "time_sleep" "gke_iowa_wait_controller_install" {
   --- RESOURCE DEPLOYMENT ---
   After controllers and secrets are ready, deploy the remaining Kubernetes manifests (non-controllers).
 */
-resource "kubernetes_manifest" "gke_iowa_k8s_manifests" {
-  provider = kubernetes.gke_iowa_provider
-  for_each = local.gke_iowa_non_controller_manifests
-  manifest = each.value.manifest
-  depends_on = [
-    kubernetes_namespace.gke_iowa_k8s_namespace,
-    kubernetes_manifest.gke_iowa_k8s_controller_manifests,
-    google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
-    google_service_account_iam_member.gke_iowa_wif_binding,
-    time_sleep.gke_iowa_wait_config_sync_install,
-    time_sleep.gke_iowa_wait_controller_install,
-    google_project_iam_member.gke_iowa_artifactregistry_reader
-  ]
-}
+# resource "kubernetes_manifest" "gke_iowa_k8s_manifests" {
+#   provider = kubernetes.gke_iowa_provider
+#   for_each = local.gke_iowa_non_controller_manifests
+#   manifest = each.value.manifest
+#   depends_on = [
+#     kubernetes_namespace.gke_iowa_k8s_namespace,
+#     kubernetes_manifest.gke_iowa_k8s_controller_manifests,
+#     google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
+#     google_service_account_iam_member.gke_iowa_wif_binding,
+#     time_sleep.gke_iowa_wait_config_sync_install,
+#     time_sleep.gke_iowa_wait_controller_install,
+#     google_project_iam_member.gke_iowa_artifactregistry_reader
+#   ]
+# }
