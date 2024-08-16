@@ -66,6 +66,7 @@ module "gke_iowa" {
   node_pools_metadata        = var.gke_configs.clusters.gke_iowa.node_pools_metadata
   node_pools_taints          = var.gke_configs.clusters.gke_iowa.node_pools_taints
   node_pools_tags            = var.gke_configs.clusters.gke_iowa.node_pools_tags
+  depends_on                 = [google_project_iam_member.sa_role_binding]
 }
 
 /*
