@@ -1,6 +1,5 @@
 /*
 Deployment Steps:
-
 1. Cluster Creation: Builds the GKE clusters (infrastructure foundation).
 2. Provider & Namespace: Configures the Kubernetes provider and creates namespaces for resource organization.
 3. Controller Deployment: Deploys core controllers to manage the system.
@@ -8,170 +7,64 @@ Deployment Steps:
 5. Resource Deployment: Deploys the actual application components (runner sets, agent pools, etc.).
 */
 
-gke_resources = {
+gke_configs = {
+  /*
+  --- CLUSTER CREATION ---
+  Creates the GKE clusters, the first step in the deployment process.
+  After cluster creation, proceed with provider setup and namespace creation. 
+  */
   clusters = {
     gke_toronto = {
-      namespaces = {
-        "ghe_runner_scale_set_controller_toronto" = {
-          annotations = {}
-          labels      = {}
-          name        = "ghe-runner-scale-set-controller-toronto"
+      project_id                 = "cap-prod-gke-6cc6"
+      name                       = "gke-toronto-cluster"
+      region                     = "us-central1"
+      zones                      = ["us-central1-a", "us-central1-b", "us-central1-c"]
+      network                    = "vpc-devops-prod"
+      subnetwork                 = "subnet-devops-prod-uc1"
+      ip_range_pods              = "secrange-devops-prod-pods-uc1"
+      ip_range_services          = "secrange-devops-prod-svc-uc1"
+      master_ipv4_cidr_block     = "10.1.1.0/28"
+      kubernetes_version         = "1.29.6-gke.1254000"
+      release_channel            = "STABLE"
+      network_project_id         = "cap-prod-network-3a4b"
+      config_sync_install_repo   = "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci/cis-k8s-policy-bundle:1.5.1"
+      service_account_name       = "sa-gke-toronto"
+      create_service_account     = true
+      master_authorized_networks = [{ cidr_block = "10.8.8.0/24", display_name = "everything" }]
+      node_pools = [
+        {
+          name                      = "default-node-pool"
+          machine_type              = "e2-medium"
+          node_locations            = "us-central1-a,us-central1-b,us-central1-c"
+          min_count                 = 1
+          max_count                 = 10
+          local_ssd_count           = 0
+          spot                      = false
+          local_ssd_ephemeral_count = 0
+          disk_size_gb              = 100
+          disk_type                 = "pd-standard"
+          image_type                = "COS_CONTAINERD"
+          enable_gcfs               = false
+          enable_gvnic              = false
+          logging_variant           = "DEFAULT"
+          auto_repair               = true
+          auto_upgrade              = true
+          preemptible               = false
+          initial_node_count        = 1
         },
-        "ghe_runner_scale_set_toronto" = {
-          annotations = {}
-          labels      = {}
-          name        = "ghe-runner-scale-set-toronto"
-        },
-        "tfc_operator_toronto" = {
-          annotations = {}
-          labels      = {}
-          name        = "tfc-operator-toronto"
-        },
-        "tfc_agent_pool_toronto" = {
-          annotations = {}
-          labels      = {}
-          name        = "tfc-agent-pool-toronto"
-        }
+      ]
+      node_pools_oauth_scopes = {
+        all = [
+          "https://www.googleapis.com/auth/logging.write",
+          "https://www.googleapis.com/auth/monitoring",
+          "https://www.googleapis.com/auth/devstorage.read_only"
+        ]
       }
-      manifests = {
-        # ghe_runner_scale_set_controller = {
-        #   controller = true
-        #   manifest = {
-        #     apiVersion = "configsync.gke.io/v1beta1"
-        #     kind       = "RootSync"
-        #     metadata = {
-        #       annotations = {
-        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-        #       }
-        #       name      = "ghe-runner-scale-set-controller"
-        #       namespace = "config-management-system"
-        #     }
-        #     spec = {
-        #       helm = {
-        #         auth                   = "gcpserviceaccount"
-        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-        #         chart                  = "gha-runner-scale-set-controller"
-        #         includeCRDs            = true
-        #         namespace              = "ghe-runner-scale-set-controller"
-        #         releaseName            = "ghe-runner-scale-set-controller"
-        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-        #         values = {
-        #           updateStrategy = "immediate"
-        #         }
-        #         version = "0.9.0"
-        #       }
-        #       sourceFormat = "unstructured"
-        #       sourceType   = "helm"
-        #     }
-        #   }
-        # },
-        # ghe_runner_scale_set = {
-        #   controller = false
-        #   manifest = {
-        #     apiVersion = "configsync.gke.io/v1beta1"
-        #     kind       = "RootSync"
-        #     metadata = {
-        #       annotations = {
-        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-        #       }
-        #       name      = "ghe-runner-scale-set"
-        #       namespace = "config-management-system"
-        #     }
-        #     spec = {
-        #       helm = {
-        #         auth                   = "gcpserviceaccount"
-        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-        #         chart                  = "gha-runner-scale-set"
-        #         namespace              = "ghe-runner-scale-set"
-        #         releaseName            = "ghe-runner-scale-set"
-        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-        #         values = {
-        #           updateStrategy     = "immediate"
-        #           githubConfigUrl    = "https://github.com/sr-ghe-org"
-        #           githubConfigSecret = "pre-defined-secret"
-        #           controllerServiceAccount = {
-        #             namespace = "ghe-runner-scale-set-controller"
-        #             name      = "ghe-runner-scale-set-controller-gha-rs-controller"
-        #           }
-        #         }
-        #         version = "0.9.0"
-        #       }
-        #       sourceFormat = "unstructured"
-        #       sourceType   = "helm"
-        #     }
-        #   }
-        # },
-        # tfc_operator = {
-        #   controller = true
-        #   manifest = {
-        #     apiVersion = "configsync.gke.io/v1beta1"
-        #     kind       = "RootSync"
-        #     metadata = {
-        #       annotations = {
-        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-        #       }
-        #       name      = "tfc-operator"
-        #       namespace = "config-management-system"
-        #     }
-        #     spec = {
-        #       helm = {
-        #         auth                   = "gcpserviceaccount"
-        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-        #         chart                  = "terraform-cloud-operator"
-        #         includeCRDs            = true
-        #         namespace              = "tfc-operator"
-        #         releaseName            = "tfc-operator"
-        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-        #         values = {
-        #           updateStrategy = "immediate"
-        #         }
-        #         version = "2.4.0"
-        #       }
-        #       sourceFormat = "unstructured"
-        #       sourceType   = "helm"
-        #     }
-        #   }
-        # }
-        # tfc_agent_pool = {
-        #   controller = false
-        #   manifest = {
-        #     apiVersion = "configsync.gke.io/v1beta1"
-        #     kind       = "RootSync"
-        #     metadata = {
-        #       annotations = {
-        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-        #       }
-        #       name      = "tfc-agent-pool"
-        #       namespace = "config-management-system"
-        #     }
-        #     spec = {
-        #       helm = {
-        #         auth                   = "gcpserviceaccount"
-        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-        #         chart                  = "terraform-agent-pool"
-        #         namespace              = "tfc-agent-pool"
-        #         releaseName            = "tfc-agent-pool"
-        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-        #         values = {
-        #           updateStrategy  = "immediate"
-        #           organization    = "tfc-test-pool"
-        #           tokenSecretName = "tfc-owner"
-        #           tokenSecretKey  = "token"
-        #           agentPoolName   = "tfc-agent-pool"
-        #           agentTokens = [
-        #             {
-        #               name = "tfc-agent-pool"
-        #             }
-        #           ]
-        #         }
-        #         version = "0.1.2"
-        #       }
-        #       sourceFormat = "unstructured"
-        #       sourceType   = "helm"
-        #     }
-        #   }
-        # }
-      }
+      enable_fleet_registration = true
+      enable_policy_controller  = true
+      enable_fleet_feature      = true
+      enable_config_sync        = true
+      fleet_membership_name     = "gke-toronto-cluster"
     }
   }
 }
