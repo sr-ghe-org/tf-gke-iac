@@ -1,3 +1,4 @@
+/* TODO - Rename the file to more generic : gke.auto.tfvars*/
 /*
 Deployment Steps:
 1. Cluster Creation: Builds the GKE clusters (infrastructure foundation).
