@@ -31,7 +31,7 @@ gke_configs = {
       config_sync_install_repo   = "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci/cis-k8s-policy-bundle:1.5.1"
       service_account_name       = "sa-gke-iowa"
       create_service_account     = true
-      master_authorized_networks = [{ cidr_block = "10.8.8.0/24", display_name = "everything" }]
+      master_authorized_networks = [{ cidr_block = "10.2.2.0/24", display_name = "everything" }]
       node_pools = [
         {
           name                      = "default-node-pool"
@@ -70,25 +70,25 @@ gke_configs = {
     gke_toronto = {
       project_id                 = "cap-prod-gke-6cc6"
       name                       = "gke-toronto-cluster"
-      region                     = "us-central1"
-      zones                      = ["us-central1-a", "us-central1-b", "us-central1-c"]
+      region                     = "northamerica-northeast2"
+      zones                      = ["northamerica-northeast2-a", "northamerica-northeast2-b", "northamerica-northeast2-c"]
       network                    = "vpc-devops-prod"
-      subnetwork                 = "subnet-devops-prod-uc1"
-      ip_range_pods              = "secrange-devops-prod-pods-uc1"
-      ip_range_services          = "secrange-devops-prod-svc-uc1"
-      master_ipv4_cidr_block     = "10.1.1.0/28"
+      subnetwork                 = "subnet-devops-prod-nane2"
+      ip_range_pods              = "secrange-devops-prod-pods-nane2"
+      ip_range_services          = "secrange-devops-prod-svc-nane2"
+      master_ipv4_cidr_block     = "10.9.9.0/28"
       kubernetes_version         = "1.29.6-gke.1254000"
       release_channel            = "STABLE"
       network_project_id         = "cap-prod-network-3a4b"
       config_sync_install_repo   = "us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod/oci/cis-k8s-policy-bundle:1.5.1"
       service_account_name       = "sa-gke-toronto"
       create_service_account     = true
-      master_authorized_networks = [{ cidr_block = "10.8.8.0/24", display_name = "everything" }]
+      master_authorized_networks = [{ cidr_block = "10.6.6.0/24", display_name = "everything" }]
       node_pools = [
         {
           name                      = "default-node-pool"
           machine_type              = "e2-medium"
-          node_locations            = "us-central1-a,us-central1-b,us-central1-c"
+          node_locations            = "northamerica-northeast2-a,northamerica-northeast2-b,northamerica-northeast2-c"
           min_count                 = 1
           max_count                 = 10
           local_ssd_count           = 0
