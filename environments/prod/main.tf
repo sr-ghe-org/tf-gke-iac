@@ -5,5 +5,3 @@ module "main" {
   gke_configs               = var.gke_configs
   gke_resources             = var.gke_resources
 }
-
-
