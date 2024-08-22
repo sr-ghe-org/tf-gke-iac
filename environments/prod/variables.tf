@@ -45,6 +45,7 @@ variable "gke_configs" {
       enable_private_endpoint    = optional(bool, true)
       enable_private_nodes       = optional(bool, true)
       deletion_protection        = optional(bool, false)
+      config_connector           = optional(bool, false)
       enable_fleet_registration  = optional(bool, false)
       enable_policy_controller   = optional(bool, false)
       enable_fleet_feature       = optional(bool, false)
