@@ -88,48 +88,48 @@ module "fleet_gke_iowa" {
   --- CONFIG MANAGEMENT ---
   Enable configuration management features (Config Sync, Policy Controller) for the cluster.
 */
-resource "google_gke_hub_feature_membership" "gke_iowa_hub_feature_membership" {
-  provider   = google-beta
-  project    = var.gke_configs.clusters.gke_iowa.project_id
-  depends_on = [google_gke_hub_feature.gke_iowa_fleet_acm, google_service_account_iam_member.gke_gar_sa_wif_binding]
-  location   = "global"
-  feature    = "configmanagement"
-  membership = module.fleet_gke_iowa.cluster_membership_id
-  configmanagement {
-    version = var.gke_configs.clusters.gke_iowa.config_mgmt_version
+# resource "google_gke_hub_feature_membership" "gke_iowa_hub_feature_membership" {
+#   provider   = google-beta
+#   project    = var.gke_configs.clusters.gke_iowa.project_id
+#   depends_on = [google_gke_hub_feature.gke_iowa_fleet_acm, google_service_account_iam_member.gke_gar_sa_wif_binding]
+#   location   = "global"
+#   feature    = "configmanagement"
+#   membership = module.fleet_gke_iowa.cluster_membership_id
+#   configmanagement {
+#     version = var.gke_configs.clusters.gke_iowa.config_mgmt_version
 
-    dynamic "config_sync" {
-      for_each = var.gke_configs.clusters.gke_iowa.enable_config_sync ? [{ enabled = true }] : []
-      content {
-        source_format = "unstructured"
-        oci {
-          sync_repo                 = var.gke_configs.clusters.gke_iowa.config_sync_install_repo
-          secret_type               = "gcpserviceaccount"
-          gcp_service_account_email = google_service_account.gke_gar_sa.email
-        }
-      }
-    }
+#     dynamic "config_sync" {
+#       for_each = var.gke_configs.clusters.gke_iowa.enable_config_sync ? [{ enabled = true }] : []
+#       content {
+#         source_format = "unstructured"
+#         oci {
+#           sync_repo                 = var.gke_configs.clusters.gke_iowa.config_sync_install_repo
+#           secret_type               = "gcpserviceaccount"
+#           gcp_service_account_email = google_service_account.gke_gar_sa.email
+#         }
+#       }
+#     }
 
-    dynamic "policy_controller" {
-      for_each = var.gke_configs.clusters.gke_iowa.enable_policy_controller ? [{ enabled = true }] : []
-      content {
-        enabled                    = true
-        template_library_installed = true
-        referential_rules_enabled  = true
-      }
-    }
-  }
-}
+#     dynamic "policy_controller" {
+#       for_each = var.gke_configs.clusters.gke_iowa.enable_policy_controller ? [{ enabled = true }] : []
+#       content {
+#         enabled                    = true
+#         template_library_installed = true
+#         referential_rules_enabled  = true
+#       }
+#     }
+#   }
+# }
 
 /*
   --- PAUSE FOR CONFIG SYNC ---
   Wait for 5 minutes (300 seconds) to allow Config Sync to install and initialize.
 */
-resource "time_sleep" "gke_iowa_wait_config_sync_install" {
-  count           = var.gke_configs.clusters.gke_iowa.enable_config_sync == true ? 1 : 0
-  create_duration = "300s"
-  depends_on      = [google_gke_hub_feature_membership.gke_iowa_hub_feature_membership]
-}
+# resource "time_sleep" "gke_iowa_wait_config_sync_install" {
+#   count           = var.gke_configs.clusters.gke_iowa.enable_config_sync == true ? 1 : 0
+#   create_duration = "300s"
+#   depends_on      = [google_gke_hub_feature_membership.gke_iowa_hub_feature_membership]
+# }
 
 /* GAR Reader for GKE Node SA. */
 resource "google_project_iam_member" "gke_iowa_artifactregistry_reader" {
@@ -155,58 +155,58 @@ data "google_project" "gke_iowa_project" {
   --- KUBERNETES PROVIDER SETUP ---
   Configure the Kubernetes provider to interact with the GKE cluster.
 */
-provider "kubernetes" {
-  host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
-  token = data.google_client_config.provider.access_token
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "/usr/bin/gke-gcloud-auth-plugin"
-  }
-  alias = "gke_iowa_provider"
-}
+# provider "kubernetes" {
+#   host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
+#   token = data.google_client_config.provider.access_token
+#   exec {
+#     api_version = "client.authentication.k8s.io/v1beta1"
+#     command     = "/usr/bin/gke-gcloud-auth-plugin"
+#   }
+#   alias = "gke_iowa_provider"
+# }
 
 /*
   --- NAMESPACE CREATION ---
   After cluster creation, Create all the required namespaces within the GKE cluster
 */
-resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
-  provider = kubernetes.gke_iowa_provider
-  for_each = var.gke_resources.clusters.gke_iowa.namespaces
-  metadata {
-    annotations = each.value.annotations
-    labels      = each.value.labels
-    name        = each.value.name
-  }
-  depends_on = [module.gke_iowa]
-}
+# resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
+#   provider = kubernetes.gke_iowa_provider
+#   for_each = var.gke_resources.clusters.gke_iowa.namespaces
+#   metadata {
+#     annotations = each.value.annotations
+#     labels      = each.value.labels
+#     name        = each.value.name
+#   }
+#   depends_on = [module.gke_iowa]
+# }
 
 /*
   --- CONTROLLER DEPLOYMENT ---
   Deploy the Kubernetes manifests for the controllers first. Once the controller is deployed - Create the secrets.
 */
 
-resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
-  provider = kubernetes.gke_iowa_provider
-  for_each = local.gke_iowa_controller_manifests
-  manifest = each.value.manifest
-  depends_on = [kubernetes_namespace.gke_iowa_k8s_namespace,
-    google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
-    google_service_account_iam_member.gke_iowa_wif_binding,
-    time_sleep.gke_iowa_wait_config_sync_install,
-    google_project_iam_member.gke_iowa_artifactregistry_reader
-  ]
-}
+# resource "kubernetes_manifest" "gke_iowa_k8s_controller_manifests" {
+#   provider = kubernetes.gke_iowa_provider
+#   for_each = local.gke_iowa_controller_manifests
+#   manifest = each.value.manifest
+#   depends_on = [kubernetes_namespace.gke_iowa_k8s_namespace,
+#     google_gke_hub_feature_membership.gke_iowa_hub_feature_membership,
+#     google_service_account_iam_member.gke_iowa_wif_binding,
+#     time_sleep.gke_iowa_wait_config_sync_install,
+#     google_project_iam_member.gke_iowa_artifactregistry_reader
+#   ]
+# }
 
 /*
   --- PAUSE FOR CONTROLLER INSTALLATION ---
   Wait for 5 minutes (300 seconds) to allow the controllers to fully install and initialize.
 */
 
-resource "time_sleep" "gke_iowa_wait_controller_install" {
-  count           = length(local.gke_iowa_controller_manifests) > 0 ? 1 : 0
-  create_duration = "300s"
-  depends_on      = [kubernetes_manifest.gke_iowa_k8s_controller_manifests]
-}
+# resource "time_sleep" "gke_iowa_wait_controller_install" {
+#   count           = length(local.gke_iowa_controller_manifests) > 0 ? 1 : 0
+#   create_duration = "300s"
+#   depends_on      = [kubernetes_manifest.gke_iowa_k8s_controller_manifests]
+# }
 
 /*
   --- RESOURCE DEPLOYMENT ---
