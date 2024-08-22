@@ -90,38 +90,38 @@ module "fleet_gke_toronto" {
   Enable configuration management features (Config Sync, Policy Controller) for the cluster.
 */
 
-# resource "google_gke_hub_feature_membership" "gke_toronto_hub_feature_membership" {
-#   provider   = google-beta
-#   project    = var.gke_configs.clusters.gke_toronto.project_id
-#   depends_on = [google_gke_hub_feature.gke_iowa_fleet_acm, google_service_account_iam_member.gke_gar_sa_wif_binding]
-#   location   = "global"
-#   feature    = "configmanagement"
-#   membership = module.fleet_gke_toronto.cluster_membership_id
-#   configmanagement {
-#     version = var.gke_configs.clusters.gke_toronto.config_mgmt_version
+resource "google_gke_hub_feature_membership" "gke_toronto_hub_feature_membership" {
+  provider   = google-beta
+  project    = var.gke_configs.clusters.gke_toronto.project_id
+  depends_on = [google_gke_hub_feature.gke_iowa_fleet_acm, google_service_account_iam_member.gke_gar_sa_wif_binding]
+  location   = "global"
+  feature    = "configmanagement"
+  membership = module.fleet_gke_toronto.cluster_membership_id
+  configmanagement {
+    version = var.gke_configs.clusters.gke_toronto.config_mgmt_version
 
-#     dynamic "config_sync" {
-#       for_each = var.gke_configs.clusters.gke_toronto.enable_config_sync ? [{ enabled = true }] : []
-#       content {
-#         source_format = "unstructured"
-#         oci {
-#           sync_repo                 = var.gke_configs.clusters.gke_toronto.config_sync_install_repo
-#           secret_type               = "gcpserviceaccount"
-#           gcp_service_account_email = google_service_account.gke_gar_sa.email
-#         }
-#       }
-#     }
+    dynamic "config_sync" {
+      for_each = var.gke_configs.clusters.gke_toronto.enable_config_sync ? [{ enabled = true }] : []
+      content {
+        source_format = "unstructured"
+        oci {
+          sync_repo                 = var.gke_configs.clusters.gke_toronto.config_sync_install_repo
+          secret_type               = "gcpserviceaccount"
+          gcp_service_account_email = google_service_account.gke_gar_sa.email
+        }
+      }
+    }
 
-#     dynamic "policy_controller" {
-#       for_each = var.gke_configs.clusters.gke_toronto.enable_policy_controller ? [{ enabled = true }] : []
-#       content {
-#         enabled                    = true
-#         template_library_installed = true
-#         referential_rules_enabled  = true
-#       }
-#     }
-#   }
-# }
+    dynamic "policy_controller" {
+      for_each = var.gke_configs.clusters.gke_toronto.enable_policy_controller ? [{ enabled = true }] : []
+      content {
+        enabled                    = true
+        template_library_installed = true
+        referential_rules_enabled  = true
+      }
+    }
+  }
+}
 
 /*
   --- PAUSE FOR CONFIG SYNC ---
