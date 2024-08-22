@@ -12,25 +12,25 @@ gke_resources = {
   clusters = {
     gke_iowa = {
       namespaces = {
-        "ghe_runner_scale_set_controller" = {
+        "ghe_runner_scale_set_controller_iowa" = {
           annotations = {}
           labels      = {}
-          name        = "ghe-runner-scale-set-controller"
+          name        = "ghe-runner-scale-set-controller-iowa"
         },
-        "ghe_runner_scale_set" = {
+        "ghe_runner_scale_set_iowa" = {
           annotations = {}
           labels      = {}
-          name        = "ghe-runner-scale-set"
+          name        = "ghe-runner-scale-set-iowa"
         },
-        "tfc_operator" = {
+        "tfc_operator_iowa" = {
           annotations = {}
           labels      = {}
-          name        = "tfc-operator"
+          name        = "tfc-operator-iowa"
         },
-        "tfc_agent_pool" = {
+        "tfc_agent_pool_iowa" = {
           annotations = {}
           labels      = {}
-          name        = "tfc-agent-pool"
+          name        = "tfc-agent-pool-iowa"
         }
       }
       manifests = {
