@@ -61,7 +61,6 @@ gke_configs = {
           "https://www.googleapis.com/auth/devstorage.read_only"
         ]
       }
-      config_connector          = true
       enable_fleet_registration = true
       enable_policy_controller  = true
       enable_fleet_feature      = true
@@ -114,7 +113,6 @@ gke_configs = {
           "https://www.googleapis.com/auth/devstorage.read_only"
         ]
       }
-      config_connector          = true
       enable_fleet_registration = true
       enable_policy_controller  = true
       enable_fleet_feature      = true

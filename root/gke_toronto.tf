@@ -104,6 +104,7 @@
 #       for_each = var.gke_configs.clusters.gke_toronto.enable_config_sync ? [{ enabled = true }] : []
 #       content {
 #         source_format = "unstructured"
+#         enabled       = true
 #         oci {
 #           sync_repo                 = var.gke_configs.clusters.gke_toronto.config_sync_install_repo
 #           secret_type               = "gcpserviceaccount"
