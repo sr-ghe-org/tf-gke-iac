@@ -149,9 +149,9 @@ resource "google_service_account_iam_member" "gke_toronto_wif_binding" {
   depends_on         = [module.gke_toronto]
 }
 
-data "google_project" "gke_toronto_project" {
-  project_id = var.gke_configs.clusters.gke_toronto.project_id
-}
+# data "google_project" "gke_toronto_project" {
+#   project_id = var.gke_configs.clusters.gke_toronto.project_id
+# }
 
 /*
   --- KUBERNETES PROVIDER SETUP ---

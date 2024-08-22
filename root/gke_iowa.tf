@@ -147,9 +147,9 @@ resource "google_service_account_iam_member" "gke_iowa_wif_binding" {
   depends_on         = [module.gke_iowa]
 }
 
-data "google_project" "gke_iowa_project" {
-  project_id = var.gke_configs.clusters.gke_iowa.project_id
-}
+# data "google_project" "gke_iowa_project" {
+#   project_id = var.gke_configs.clusters.gke_iowa.project_id
+# }
 
 /*
   --- KUBERNETES PROVIDER SETUP ---
