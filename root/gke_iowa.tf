@@ -147,23 +147,23 @@ resource "google_service_account_iam_member" "gke_iowa_wif_binding" {
   depends_on         = [module.gke_iowa]
 }
 
-# data "google_project" "gke_iowa_project" {
-#   project_id = var.gke_configs.clusters.gke_iowa.project_id
-# }
+data "google_project" "gke_iowa_project" {
+  project_id = var.gke_configs.clusters.gke_iowa.project_id
+}
 
 /*
   --- KUBERNETES PROVIDER SETUP ---
   Configure the Kubernetes provider to interact with the GKE cluster.
 */
-# provider "kubernetes" {
-#   host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
-#   token = data.google_client_config.provider.access_token
-#   exec {
-#     api_version = "client.authentication.k8s.io/v1beta1"
-#     command     = "/usr/bin/gke-gcloud-auth-plugin"
-#   }
-#   alias = "gke_iowa_provider"
-# }
+provider "kubernetes" {
+  host  = "https://connectgateway.googleapis.com/v1/projects/${data.google_project.gke_iowa_project.number}/locations/${module.fleet_gke_iowa.location}/gkeMemberships/${var.gke_configs.clusters.gke_iowa.fleet_membership_name}"
+  token = data.google_client_config.provider.access_token
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "/usr/bin/gke-gcloud-auth-plugin"
+  }
+  alias = "gke_iowa_provider"
+}
 
 /*
   --- NAMESPACE CREATION ---
