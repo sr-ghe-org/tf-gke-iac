@@ -58,6 +58,7 @@ module "gke_iowa" {
   enable_private_endpoint    = var.gke_configs.clusters.gke_iowa.enable_private_endpoint
   enable_private_nodes       = var.gke_configs.clusters.gke_iowa.enable_private_nodes
   deletion_protection        = var.gke_configs.clusters.gke_iowa.deletion_protection
+  config_connector           = var.gke_configs.clusters.gke_iowa.config_connector
   master_ipv4_cidr_block     = var.gke_configs.clusters.gke_iowa.master_ipv4_cidr_block
   master_authorized_networks = var.gke_configs.clusters.gke_iowa.master_authorized_networks
   node_pools                 = var.gke_configs.clusters.gke_iowa.node_pools

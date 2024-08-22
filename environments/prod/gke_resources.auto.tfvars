@@ -173,7 +173,7 @@ gke_resources = {
         # }
       }
     }
-     gke_toronto = {
+    gke_toronto = {
       namespaces = {
         "ghe_runner_scale_set_controller_toronto" = {
           annotations = {}
