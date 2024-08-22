@@ -173,5 +173,30 @@ gke_resources = {
         }
       }
     }
+     gke_toronto = {
+      namespaces = {
+        "ghe_runner_scale_set_controller_toronto" = {
+          annotations = {}
+          labels      = {}
+          name        = "ghe-runner-scale-set-controller-toronto"
+        },
+        "ghe_runner_scale_set_toronto" = {
+          annotations = {}
+          labels      = {}
+          name        = "ghe-runner-scale-set-toronto"
+        },
+        "tfc_operator_toronto" = {
+          annotations = {}
+          labels      = {}
+          name        = "tfc-operator-toronto"
+        },
+        "tfc_agent_pool_toronto" = {
+          annotations = {}
+          labels      = {}
+          name        = "tfc-agent-pool-toronto"
+        }
+      }
+      manifests = {}
+    }
   }
 }
