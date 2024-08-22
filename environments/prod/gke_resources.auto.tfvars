@@ -65,42 +65,42 @@ gke_resources = {
             }
           }
         },
-        ghe_runner_scale_set_iowa = {
-          controller = false
-          manifest = {
-            apiVersion = "configsync.gke.io/v1beta1"
-            kind       = "RootSync"
-            metadata = {
-              annotations = {
-                "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-              }
-              name      = "ghe-runner-scale-set-iowa"
-              namespace = "config-management-system"
-            }
-            spec = {
-              helm = {
-                auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-                chart                  = "gha-runner-scale-set"
-                namespace              = "ghe-runner-scale-set-iowa"
-                releaseName            = "ghe-runner-scale-set-iowa"
-                repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-                values = {
-                  updateStrategy     = "immediate"
-                  githubConfigUrl    = "https://github.com/sr-ghe-org"
-                  githubConfigSecret = "pre-defined-secret"
-                  controllerServiceAccount = {
-                    namespace = "ghe-runner-scale-set-controller"
-                    name      = "ghe-runner-scale-set-controller-gha-rs-controller"
-                  }
-                }
-                version = "0.9.0"
-              }
-              sourceFormat = "unstructured"
-              sourceType   = "helm"
-            }
-          }
-        },
+        # ghe_runner_scale_set_iowa = {
+        #   controller = false
+        #   manifest = {
+        #     apiVersion = "configsync.gke.io/v1beta1"
+        #     kind       = "RootSync"
+        #     metadata = {
+        #       annotations = {
+        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
+        #       }
+        #       name      = "ghe-runner-scale-set-iowa"
+        #       namespace = "config-management-system"
+        #     }
+        #     spec = {
+        #       helm = {
+        #         auth                   = "gcpserviceaccount"
+        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
+        #         chart                  = "gha-runner-scale-set"
+        #         namespace              = "ghe-runner-scale-set-iowa"
+        #         releaseName            = "ghe-runner-scale-set-iowa"
+        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
+        #         values = {
+        #           updateStrategy     = "immediate"
+        #           githubConfigUrl    = "https://github.com/sr-ghe-org"
+        #           githubConfigSecret = "pre-defined-secret"
+        #           controllerServiceAccount = {
+        #             namespace = "ghe-runner-scale-set-controller"
+        #             name      = "ghe-runner-scale-set-controller-gha-rs-controller"
+        #           }
+        #         }
+        #         version = "0.9.0"
+        #       }
+        #       sourceFormat = "unstructured"
+        #       sourceType   = "helm"
+        #     }
+        #   }
+        # },
         tfc_operator_iowa = {
           controller = true
           manifest = {
@@ -132,45 +132,45 @@ gke_resources = {
             }
           }
         }
-        tfc_agent_pool_iowa = {
-          controller = false
-          manifest = {
-            apiVersion = "configsync.gke.io/v1beta1"
-            kind       = "RootSync"
-            metadata = {
-              annotations = {
-                "configsync.gke.io/deletion-propagation-policy" = "Foreground"
-              }
-              name      = "tfc-agent-pool"
-              namespace = "config-management-system"
-            }
-            spec = {
-              helm = {
-                auth                   = "gcpserviceaccount"
-                gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
-                chart                  = "terraform-agent-pool"
-                namespace              = "tfc-agent-pool"
-                releaseName            = "tfc-agent-pool"
-                repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
-                values = {
-                  updateStrategy  = "immediate"
-                  organization    = "tfc-test-pool"
-                  tokenSecretName = "tfc-owner"
-                  tokenSecretKey  = "token"
-                  agentPoolName   = "tfc-agent-pool"
-                  agentTokens = [
-                    {
-                      name = "tfc-agent-pool"
-                    }
-                  ]
-                }
-                version = "0.1.2"
-              }
-              sourceFormat = "unstructured"
-              sourceType   = "helm"
-            }
-          }
-        }
+        # tfc_agent_pool_iowa = {
+        #   controller = false
+        #   manifest = {
+        #     apiVersion = "configsync.gke.io/v1beta1"
+        #     kind       = "RootSync"
+        #     metadata = {
+        #       annotations = {
+        #         "configsync.gke.io/deletion-propagation-policy" = "Foreground"
+        #       }
+        #       name      = "tfc-agent-pool"
+        #       namespace = "config-management-system"
+        #     }
+        #     spec = {
+        #       helm = {
+        #         auth                   = "gcpserviceaccount"
+        #         gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
+        #         chart                  = "terraform-agent-pool"
+        #         namespace              = "tfc-agent-pool"
+        #         releaseName            = "tfc-agent-pool"
+        #         repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
+        #         values = {
+        #           updateStrategy  = "immediate"
+        #           organization    = "tfc-test-pool"
+        #           tokenSecretName = "tfc-owner"
+        #           tokenSecretKey  = "token"
+        #           agentPoolName   = "tfc-agent-pool"
+        #           agentTokens = [
+        #             {
+        #               name = "tfc-agent-pool"
+        #             }
+        #           ]
+        #         }
+        #         version = "0.1.2"
+        #       }
+        #       sourceFormat = "unstructured"
+        #       sourceType   = "helm"
+        #     }
+        #   }
+        # }
       }
     }
      gke_toronto = {
