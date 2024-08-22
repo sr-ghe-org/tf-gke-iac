@@ -102,6 +102,7 @@ resource "google_gke_hub_feature_membership" "gke_iowa_hub_feature_membership" {
       for_each = var.gke_configs.clusters.gke_iowa.enable_config_sync ? [{ enabled = true }] : []
       content {
         source_format = "unstructured"
+        enabled       = true
         oci {
           sync_repo                 = var.gke_configs.clusters.gke_iowa.config_sync_install_repo
           secret_type               = "gcpserviceaccount"
