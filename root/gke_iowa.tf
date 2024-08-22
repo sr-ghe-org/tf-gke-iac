@@ -171,16 +171,16 @@ provider "kubernetes" {
   --- NAMESPACE CREATION ---
   After cluster creation, Create all the required namespaces within the GKE cluster
 */
-# resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
-#   provider = kubernetes.gke_iowa_provider
-#   for_each = var.gke_resources.clusters.gke_iowa.namespaces
-#   metadata {
-#     annotations = each.value.annotations
-#     labels      = each.value.labels
-#     name        = each.value.name
-#   }
-#   depends_on = [module.gke_iowa]
-# }
+resource "kubernetes_namespace" "gke_iowa_k8s_namespace" {
+  provider = kubernetes.gke_iowa_provider
+  for_each = var.gke_resources.clusters.gke_iowa.namespaces
+  metadata {
+    annotations = each.value.annotations
+    labels      = each.value.labels
+    name        = each.value.name
+  }
+  depends_on = [module.gke_iowa]
+}
 
 /*
   --- CONTROLLER DEPLOYMENT ---
