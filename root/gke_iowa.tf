@@ -8,10 +8,10 @@
   5. Resource Deployment: Deploy the actual application components (runner sets, agent pools, etc.).
 */
 
-# locals {
-#   gke_iowa_controller_manifests     = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == true }
-#   gke_iowa_non_controller_manifests = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == false }
-# }
+locals {
+  gke_iowa_controller_manifests     = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == true }
+  gke_iowa_non_controller_manifests = { for k, v in var.gke_resources.clusters.gke_iowa.manifests : k => v if v.controller == false }
+}
 
 resource "google_service_account" "gke_gar_sa" {
   project    = var.gke_configs.clusters.gke_iowa.project_id
