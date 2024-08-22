@@ -34,7 +34,7 @@ gke_resources = {
         }
       }
       manifests = {
-        ghe_runner_scale_set_controller = {
+        ghe_runner_scale_set_controller_iowa = {
           controller = true
           manifest = {
             apiVersion = "configsync.gke.io/v1beta1"
@@ -43,7 +43,7 @@ gke_resources = {
               annotations = {
                 "configsync.gke.io/deletion-propagation-policy" = "Foreground"
               }
-              name      = "ghe-runner-scale-set-controller"
+              name      = "ghe-runner-scale-set-controller-iowa"
               namespace = "config-management-system"
             }
             spec = {
@@ -52,8 +52,8 @@ gke_resources = {
                 gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
                 chart                  = "gha-runner-scale-set-controller"
                 includeCRDs            = true
-                namespace              = "ghe-runner-scale-set-controller"
-                releaseName            = "ghe-runner-scale-set-controller"
+                namespace              = "ghe-runner-scale-set-controller-iowa"
+                releaseName            = "ghe-runner-scale-set-controller-iowa"
                 repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
                 values = {
                   updateStrategy = "immediate"
@@ -65,7 +65,7 @@ gke_resources = {
             }
           }
         },
-        ghe_runner_scale_set = {
+        ghe_runner_scale_set_iowa = {
           controller = false
           manifest = {
             apiVersion = "configsync.gke.io/v1beta1"
@@ -74,7 +74,7 @@ gke_resources = {
               annotations = {
                 "configsync.gke.io/deletion-propagation-policy" = "Foreground"
               }
-              name      = "ghe-runner-scale-set"
+              name      = "ghe-runner-scale-set-iowa"
               namespace = "config-management-system"
             }
             spec = {
@@ -82,8 +82,8 @@ gke_resources = {
                 auth                   = "gcpserviceaccount"
                 gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
                 chart                  = "gha-runner-scale-set"
-                namespace              = "ghe-runner-scale-set"
-                releaseName            = "ghe-runner-scale-set"
+                namespace              = "ghe-runner-scale-set-iowa"
+                releaseName            = "ghe-runner-scale-set-iowa"
                 repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
                 values = {
                   updateStrategy     = "immediate"
@@ -101,7 +101,7 @@ gke_resources = {
             }
           }
         },
-        tfc_operator = {
+        tfc_operator_iowa = {
           controller = true
           manifest = {
             apiVersion = "configsync.gke.io/v1beta1"
@@ -110,7 +110,7 @@ gke_resources = {
               annotations = {
                 "configsync.gke.io/deletion-propagation-policy" = "Foreground"
               }
-              name      = "tfc-operator"
+              name      = "tfc-operator-iowa"
               namespace = "config-management-system"
             }
             spec = {
@@ -119,8 +119,8 @@ gke_resources = {
                 gcpServiceAccountEmail = "sa-gke-gar@cap-prod-gke-6cc6.iam.gserviceaccount.com"
                 chart                  = "terraform-cloud-operator"
                 includeCRDs            = true
-                namespace              = "tfc-operator"
-                releaseName            = "tfc-operator"
+                namespace              = "tfc-operator-iowa"
+                releaseName            = "tfc-operator-iowa"
                 repo                   = "oci://us-central1-docker.pkg.dev/cap-prod-gke-6cc6/artifreg-devops-prod"
                 values = {
                   updateStrategy = "immediate"
@@ -132,7 +132,7 @@ gke_resources = {
             }
           }
         }
-        tfc_agent_pool = {
+        tfc_agent_pool_iowa = {
           controller = false
           manifest = {
             apiVersion = "configsync.gke.io/v1beta1"
